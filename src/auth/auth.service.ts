@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { AuthLoginDto } from './dto/auth-login.dto';
+import { AuthRequestDto } from './dto/auth-request.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/config/config.type';
 import ms from 'ms';
+import { AuthResponseDto } from './dto/auth-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -12,13 +13,23 @@ export class AuthService {
     private configService: ConfigService<AllConfigType>,
   ) {}
 
-  public loginViaLotte(authLoginDto: AuthLoginDto) {
+  async loginViaLotte(authLoginDto: AuthRequestDto): Promise<AuthResponseDto> {
     this.getTokensData({
       username: authLoginDto.username,
       password: authLoginDto.password,
       useraddr: authLoginDto.useraddr,
     });
-    return { asd: 'loginViaLotte' };
+    const auth = new AuthResponseDto();
+    (auth.error_code = '0000'), (auth.error_desc = 'asd');
+    auth.data_list = [
+      {
+        username: authLoginDto.username,
+        password: authLoginDto.password,
+        useraddr: authLoginDto.useraddr,
+      },
+    ];
+    console.log(auth);
+    return auth;
   }
 
   private async getTokensData(data: {
@@ -40,7 +51,6 @@ export class AuthService {
         expiresIn: tokenExpiresIn,
       },
     );
-    console.log(token);
     return {
       token,
       tokenExpires,

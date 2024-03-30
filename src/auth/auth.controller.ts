@@ -1,15 +1,19 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Post } from '@nestjs/common';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { AuthLoginDto } from './dto/auth-login.dto';
+import { AuthRequestDto } from './dto/auth-request.dto';
+import { AuthResponseDto } from './dto/auth-response.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post('login')
-  public loginViaLotte(@Body() authLoginDto: AuthLoginDto) {
-    return this.authService.loginViaLotte(authLoginDto);
+  @ApiOkResponse({ type: AuthResponseDto })
+  public loginViaLotte(
+    @Body() authLoginRequestDto: AuthRequestDto,
+  ): Promise<AuthResponseDto> {
+    return this.authService.loginViaLotte(authLoginRequestDto);
   }
 }

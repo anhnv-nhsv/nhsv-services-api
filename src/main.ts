@@ -1,10 +1,16 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AllConfigType } from './config/config.type';
 import { ConfigService } from '@nestjs/config';
 import { useContainer } from 'class-validator';
-import { VersioningType } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common';
+import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
+import validationOptions from './utils/validation-options';
 
 declare const module: any;
 
@@ -23,7 +29,13 @@ async function bootstrap() {
   app.enableVersioning({
     type: VersioningType.URI,
   });
-
+  app.useGlobalPipes(new ValidationPipe(validationOptions));
+  app.useGlobalInterceptors(
+    // ResolvePromisesInterceptor is used to resolve promises in responses because class-transformer can't do it
+    // https://github.com/typestack/class-transformer/issues/549
+    new ResolvePromisesInterceptor(),
+    new ClassSerializerInterceptor(app.get(Reflector)),
+  );
   // hot reload
   if (module.hot) {
     module.hot.accept();
