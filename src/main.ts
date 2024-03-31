@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
 import validationOptions from './utils/validation-options';
+import { RedocModule } from 'nest-redoc';
 
 declare const module: any;
 
@@ -42,14 +43,23 @@ async function bootstrap() {
     module.hot.dispose(() => app.close());
   }
   const options = new DocumentBuilder()
-    .setTitle('API')
-    .setDescription('API docs')
+    .setTitle('NHSV API Docs')
     .setVersion('1.0')
+    .setContact('NHSV Contact', 'https://nhsv.vn', 'mail@example.com')
+    .addTag('Test', 'test vcl')
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('docs', app, document);
-
+  SwaggerModule.setup('swagger', app, document);
+  // setup the redoc module
+  await RedocModule.setup('/redoc', app, document, {
+    title: 'NHSV API Document',
+    favicon: 'https://nhsv.vn/uploadfile/source/favicon.png',
+    logo: {
+      url: 'https://nhsv.vn/uploadfile/source/caidat/logo.png',
+    },
+    hideDownloadButton: true,
+  });
   await app.listen(configService.getOrThrow('app.port', { infer: true }));
 }
 void bootstrap();

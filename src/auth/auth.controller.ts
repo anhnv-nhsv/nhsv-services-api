@@ -7,7 +7,7 @@ import { AuthResponseDto } from './dto/auth-response.dto';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Post('login')
   @ApiOkResponse({ type: AuthResponseDto })

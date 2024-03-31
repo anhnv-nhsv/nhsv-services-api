@@ -4,7 +4,6 @@ import { HomeModule } from './home/home.module';
 import { ConfigModule } from '@nestjs/config';
 import appConfig from './config/app.config';
 import authConfig from './auth/config/auth.config';
-import { HttpModule } from '@nestjs/axios';
 import { EkycModule } from './ekyc/ekyc.module';
 
 @Module({
@@ -16,7 +15,6 @@ import { EkycModule } from './ekyc/ekyc.module';
     }),
     AuthModule,
     HomeModule,
-    HttpModule,
     EkycModule,
   ],
 })
