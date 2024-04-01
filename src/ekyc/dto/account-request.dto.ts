@@ -47,7 +47,7 @@ class EKYCCheckAccountExistPayloadDto {
 class EKYCUpdateAccountPayloadDto {
   @ApiProperty({
     description:
-      'Id tài khoản của khách hàng - lấy ở field os_seq_no của EKY-001',
+      'Id tài khoản của khách hàng - lấy ở field os_seq_no của open account',
     example: '6591',
   })
   @IsNotEmpty()

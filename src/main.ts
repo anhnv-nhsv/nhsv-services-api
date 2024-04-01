@@ -94,12 +94,12 @@ async function bootstrap() {
         tags: ['Home'],
       },
       {
-        name: 'Authentication',
-        tags: ['Auth'],
+        name: 'Authentication and OTP',
+        tags: ['Authentication and OTP'],
       },
       {
         name: 'EKYC Open Account',
-        tags: ['EKYC'],
+        tags: ['EKYC Open Account'],
       },
     ],
   });

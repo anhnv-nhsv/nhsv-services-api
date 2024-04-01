@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { AuthRequestDto } from './dto/auth-request.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 
-@ApiTags('Auth')
+@ApiTags('Authentication and OTP')
 @ApiResponse({
   status: 401,
   description: '- No API key found in request.\n\n- Unauthorized',

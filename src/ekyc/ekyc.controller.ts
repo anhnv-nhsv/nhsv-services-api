@@ -18,7 +18,7 @@ import {
 } from './dto/account-response.dto';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('EKYC')
+@ApiTags('EKYC Open Account')
 @ApiResponse({
   status: 401,
   description: '- No API key found in request.\n\n- Unauthorized',
