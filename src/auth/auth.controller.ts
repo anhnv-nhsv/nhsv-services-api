@@ -1,10 +1,14 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { AuthRequestDto } from './dto/auth-request.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 
 @ApiTags('Auth')
+@ApiResponse({
+  status: 401,
+  description: '- No API key found in request.\n\n- Unauthorized',
+})
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}

@@ -16,9 +16,13 @@ import {
   EKYCOpenAccountResponseDto,
   EKYCUpdateAccountResponseDto,
 } from './dto/account-response.dto';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('EKYC')
+@ApiResponse({
+  status: 401,
+  description: '- No API key found in request.\n\n- Unauthorized',
+})
 @Controller('ekyc')
 export class EkycController {
   constructor(private ekycService: EkycService) {}
