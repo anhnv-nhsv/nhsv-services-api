@@ -7,7 +7,9 @@ import { HttpModule } from '@nestjs/axios';
   imports: [
     HttpModule.register({
       baseURL: process.env.LOTTE_BASE_URL,
-      headers: {},
+      headers: {
+        apiKey: process.env.LOTTE_API_KEY,
+      },
     }),
   ],
   controllers: [EkycController],

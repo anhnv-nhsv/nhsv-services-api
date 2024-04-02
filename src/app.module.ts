@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import appConfig from './config/app.config';
 import authConfig from './auth/config/auth.config';
 import { EkycModule } from './ekyc/ekyc.module';
+import { GlobalModule } from './global/global.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { EkycModule } from './ekyc/ekyc.module';
     AuthModule,
     HomeModule,
     EkycModule,
+    GlobalModule,
   ],
 })
 export class AppModule {}

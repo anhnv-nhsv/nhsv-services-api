@@ -14,6 +14,12 @@ class EnvironmentVariablesValidator {
   @IsString()
   AUTH_JWT_TOKEN_EXPIRES_IN: string;
 
+  @IsString()
+  LOTTE_BASE_URL: string;
+
+  @IsString()
+  LOTTE_API_KEY: string;
+
   // @IsString()
   // AUTH_REFRESH_SECRET: string;
 
@@ -40,6 +46,8 @@ export default registerAs<AuthConfig>('auth', () => {
     secret: process.env.AUTH_JWT_SECRET,
     otpVerifySecret: process.env.AUTH_JWT_OTP_VERIFY_SECRET,
     expires: process.env.AUTH_JWT_TOKEN_EXPIRES_IN,
+    lotteBaseUrl: process.env.LOTTE_BASE_URL,
+    lotteApiKey: process.env.LOTTE_API_KEY,
     // refreshSecret: process.env.AUTH_REFRESH_SECRET,
     // refreshExpires: process.env.AUTH_REFRESH_TOKEN_EXPIRES_IN,
     // forgotSecret: process.env.AUTH_FORGOT_SECRET,

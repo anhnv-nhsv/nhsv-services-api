@@ -13,4 +13,7 @@ export class AuthRequestDto {
   @ApiProperty({ example: '127.0.0.1' })
   @IsNotEmpty()
   useraddr: string;
+
+  @ApiProperty({ example: 'V' })
+  langCode: string;
 }
