@@ -21,8 +21,8 @@ export class UserAccountDto {
   next_key: string;
 
   @ApiProperty({
-    example: 'Danh sách bank của TK',
-    description: 'Giá trị next_key',
+    example: [],
+    description: 'Danh sách bank của TK',
   })
   bankInfo: AccountBankDto[];
 }

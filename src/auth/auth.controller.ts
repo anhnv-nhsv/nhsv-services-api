@@ -20,4 +20,10 @@ export class AuthController {
   ): Promise<AuthResponseDto> {
     return this.authService.loginViaLotte(authLoginRequestDto);
   }
+
+  @Post('otp/send')
+  public sendOTP() {}
+
+  @Post('otp/verify')
+  public verifyOTP() {}
 }
