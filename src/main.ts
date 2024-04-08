@@ -38,8 +38,7 @@ async function bootstrap() {
     new ResolvePromisesInterceptor(),
     new ClassSerializerInterceptor(app.get(Reflector)),
   );
-  const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new HttpExceptionFilter(httpAdapter));
+  app.useGlobalFilters(new HttpExceptionFilter());
   // hot reload
   if (module.hot) {
     module.hot.accept();

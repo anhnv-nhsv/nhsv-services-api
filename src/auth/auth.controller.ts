@@ -2,7 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { AuthResponseDto } from './domain/auth-response';
+import { AuthResponse } from './domain/auth-response';
 
 @ApiTags('Authentication and OTP')
 @ApiResponse({
@@ -14,10 +14,10 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('login')
-  @ApiOkResponse({ type: AuthResponseDto })
+  @ApiOkResponse({ type: AuthResponse })
   public loginViaLotte(
     @Body() authLoginRequestDto: LoginDto,
-  ): Promise<AuthResponseDto> {
+  ): Promise<AuthResponse> {
     return this.authService.loginViaLotte(authLoginRequestDto);
   }
 

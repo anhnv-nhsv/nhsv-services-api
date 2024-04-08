@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/config/config.type';
 import ms from 'ms';
-import { AuthResponseDto } from './domain/auth-response';
+import { AuthResponse } from './domain/auth-response';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom, throwError, timeout } from 'rxjs';
 import { AxiosError } from 'axios';
@@ -30,7 +30,7 @@ export class AuthService {
     infer: true,
   });
 
-  async loginViaLotte(authLoginDto: LoginDto): Promise<AuthResponseDto> {
+  async loginViaLotte(authLoginDto: LoginDto): Promise<AuthResponse> {
     const { data } = await firstValueFrom(
       this.httpService
         .post(
@@ -56,7 +56,7 @@ export class AuthService {
           }),
           catchError((error: AxiosError) => {
             console.log(error);
-            throwError(error);
+            throwError(() => error);
           }),
         ),
     );
@@ -66,7 +66,7 @@ export class AuthService {
     const { token } = this.getTokensData({
       username: loggedUsers[0].user_name,
     });
-    const auth = new AuthResponseDto();
+    const auth = new AuthResponse();
     (auth.error_code = '0000'), (auth.error_desc = 'asd');
     loggedUsers[0].otp_event = token;
     auth.data_list = loggedUsers as LoggedInInfoDto[];
