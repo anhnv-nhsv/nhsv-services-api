@@ -1,8 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { AuthRequestDto } from './dto/auth-request.dto';
-import { AuthResponseDto } from './dto/auth-response.dto';
+import { LoginDto } from './dto/login.dto';
+import { AuthResponseDto } from './domain/auth-response';
 
 @ApiTags('Authentication and OTP')
 @ApiResponse({
@@ -16,7 +16,7 @@ export class AuthController {
   @Post('login')
   @ApiOkResponse({ type: AuthResponseDto })
   public loginViaLotte(
-    @Body() authLoginRequestDto: AuthRequestDto,
+    @Body() authLoginRequestDto: LoginDto,
   ): Promise<AuthResponseDto> {
     return this.authService.loginViaLotte(authLoginRequestDto);
   }

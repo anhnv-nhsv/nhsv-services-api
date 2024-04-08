@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UserAccountDto } from './user-account.dto';
+import { UserAccountDto } from './user-account';
 
 export class LoggedInInfoDto {
   @ApiProperty({ example: '039c110015', description: 'Login ID' })
@@ -66,6 +66,12 @@ export class LoggedInInfoDto {
       'Khóa tạo mã S-OTP. Sử dụng để tạo mã S- OTP, lưu ý mã S-OTP được tạo ra sẽ có hiệu lực trong 60s',
   })
   sotp_sec?: string;
+
+  @ApiProperty({
+    example: ' ',
+    description: 'Lần cuối cùng thay đổi mật khẩu',
+  })
+  last_chg_pswd?: string;
 
   @ApiProperty({
     example: [],

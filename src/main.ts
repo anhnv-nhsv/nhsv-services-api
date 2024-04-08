@@ -1,4 +1,4 @@
-import { NestFactory, Reflector } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AllConfigType } from './config/config.type';
@@ -12,6 +12,7 @@ import {
 import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
 import validationOptions from './utils/validation-options';
 import { RedocModule } from 'nest-redoc';
+import { HttpExceptionFilter } from './filter/http-exception.filter';
 
 declare const module: any;
 
@@ -37,6 +38,8 @@ async function bootstrap() {
     new ResolvePromisesInterceptor(),
     new ClassSerializerInterceptor(app.get(Reflector)),
   );
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new HttpExceptionFilter(httpAdapter));
   // hot reload
   if (module.hot) {
     module.hot.accept();

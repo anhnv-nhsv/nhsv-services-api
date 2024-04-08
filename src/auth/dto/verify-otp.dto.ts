@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
-export class OtpVerifyRequestDto {
+export class VerifyOTPDto {
   @ApiProperty({ example: '039c110031', description: 'Số tài khoản' })
   @IsNotEmpty()
   acntNo: string;

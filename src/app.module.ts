@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import appConfig from './config/app.config';
 import authConfig from './auth/config/auth.config';
 import { EkycModule } from './ekyc/ekyc.module';
-import { GlobalModule } from './global/global.module';
+import { RedisModule } from '@nestjs-modules/ioredis';
 
 @Module({
   imports: [
@@ -14,10 +14,13 @@ import { GlobalModule } from './global/global.module';
       load: [authConfig, appConfig],
       envFilePath: ['.env'],
     }),
+    RedisModule.forRoot({
+      type: 'single',
+      url: 'redis://localhost:6379',
+    }),
     AuthModule,
     HomeModule,
     EkycModule,
-    GlobalModule,
   ],
 })
 export class AppModule {}

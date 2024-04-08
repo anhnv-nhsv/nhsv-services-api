@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { AuthRequestDto } from './dto/auth-request.dto';
+import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/config/config.type';
 import ms from 'ms';
-import { AuthResponseDto } from './dto/auth-response.dto';
+import { AuthResponseDto } from './domain/auth-response';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom, throwError, timeout } from 'rxjs';
 import { AxiosError } from 'axios';
-import { OtpVerifyRequestDto } from './dto/otp-verify-request.dto';
+import { VerifyOTPDto } from './dto/verify-otp.dto';
+import { LoggedInInfoDto } from './domain/logged-in-info';
+import { plainToClass } from 'class-transformer';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import { Redis } from 'ioredis';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +20,7 @@ export class AuthService {
     private jwtService: JwtService,
     private httpService: HttpService,
     private configService: ConfigService<AllConfigType>,
+    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   private lotteBaseUrl = this.configService.getOrThrow('auth.lotteBaseUrl', {
@@ -25,7 +30,7 @@ export class AuthService {
     infer: true,
   });
 
-  async loginViaLotte(authLoginDto: AuthRequestDto): Promise<AuthResponseDto> {
+  async loginViaLotte(authLoginDto: LoginDto): Promise<AuthResponseDto> {
     const { data } = await firstValueFrom(
       this.httpService
         .post(
@@ -46,27 +51,36 @@ export class AuthService {
         )
         .pipe(
           timeout({
-            each: 2000,
+            each: 5000,
             with: () => throwError(() => new Error('Verify user timeout')),
           }),
           catchError((error: AxiosError) => {
             console.log(error);
-            return throwError(error);
+            throwError(error);
           }),
         ),
     );
+    console.log('data', data);
+    const loggedUsers = plainToClass(LoggedInInfoDto, data.data_list);
     // set data to response
-    const { token } = this.getTokensData({ username: data.user_name });
+    const { token } = this.getTokensData({
+      username: loggedUsers[0].user_name,
+    });
     const auth = new AuthResponseDto();
     (auth.error_code = '0000'), (auth.error_desc = 'asd');
-    auth.data_list = [{ otp_event: token }];
+    loggedUsers[0].otp_event = token;
+    auth.data_list = loggedUsers as LoggedInInfoDto[];
     // to-do: set redis key-value
-    console.log(auth);
+    this.redis.hset(`user:${authLoginDto.username}`, {
+      pass: authLoginDto.password,
+      otp_event: token,
+      otp_index: loggedUsers[0].otp_index,
+    });
     return auth;
   }
 
   async sendOTP() {}
-  async verifyOTP(otpVerifyRequestDto: OtpVerifyRequestDto) {
+  async verifyOTP(otpVerifyRequestDto: VerifyOTPDto) {
     const { data } = await firstValueFrom(
       this.httpService
         .post(
