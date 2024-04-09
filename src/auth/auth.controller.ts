@@ -2,7 +2,9 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { AuthResponse } from './domain/auth-response';
+import { AuthResponse } from './domain/auth/auth-response';
+import { VerifiedOtpResponse } from './domain/verify-otp/verified-otp-response';
+import { VerifyOTPDto } from './dto/verify-otp.dto';
 
 @ApiTags('Authentication and OTP')
 @ApiResponse({
@@ -15,9 +17,7 @@ export class AuthController {
 
   @Post('login')
   @ApiOkResponse({ type: AuthResponse })
-  public loginViaLotte(
-    @Body() authLoginRequestDto: LoginDto,
-  ): Promise<AuthResponse> {
+  public loginViaLotte(@Body() authLoginRequestDto: LoginDto): Promise<AuthResponse> {
     return this.authService.loginViaLotte(authLoginRequestDto);
   }
 
@@ -25,5 +25,7 @@ export class AuthController {
   public sendOTP() {}
 
   @Post('otp/verify')
-  public verifyOTP() {}
+  public verifyOTP(otpVerifyRequestDto: VerifyOTPDto): Promise<VerifiedOtpResponse> {
+    return this.authService.verifyOTP(otpVerifyRequestDto);
+  }
 }

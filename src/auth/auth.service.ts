@@ -4,17 +4,17 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AllConfigType } from 'src/config/config.type';
 import ms from 'ms';
-import { AuthResponse } from './domain/auth-response';
+import { AuthResponse } from './domain/auth/auth-response';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom, throwError, timeout } from 'rxjs';
 import { AxiosError } from 'axios';
 import { VerifyOTPDto } from './dto/verify-otp.dto';
-import { LoggedInInfo } from './domain/logged-in-info';
+import { LoggedInInfo } from './domain/auth/logged-in-info';
 import { plainToClass } from 'class-transformer';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
-import { VerifiedOtp } from './domain/verified-otp';
-import { VerifiedOtpResponse } from './domain/verified-otp-response';
+import { VerifiedOtp } from './domain/verify-otp/verified-otp';
+import { VerifiedOtpResponse } from './domain/verify-otp/verified-otp-response';
 
 @Injectable()
 export class AuthService {
@@ -58,12 +58,7 @@ export class AuthService {
           }),
           catchError((error: AxiosError) => {
             console.log(error);
-            throw new HttpException(
-              error.response?.data
-                ? error.response.data['error_desc']
-                : error.response?.statusText,
-              error.response?.status as number,
-            );
+            throw new HttpException(error.response?.data ? error.response.data['error_desc'] : error.response?.statusText, error.response?.status as number);
           }),
         ),
     );
@@ -74,9 +69,7 @@ export class AuthService {
     if (data.data_list) {
       const loggedUsers = plainToClass(LoggedInInfo, data.data_list);
       // set data to response
-      const { token } = this.getTokensData({
-        username: loggedUsers[0].user_name,
-      });
+      const { token } = this.getTokensData(loggedUsers[0].user_name, 'auth.expires');
       loggedUsers[0].otp_event = token;
       auth.data_list = loggedUsers as LoggedInInfo[];
       this.redis.hset(`user:${authLoginDto.username}`, {
@@ -89,9 +82,7 @@ export class AuthService {
   }
 
   async sendOTP() {}
-  async verifyOTP(
-    otpVerifyRequestDto: VerifyOTPDto,
-  ): Promise<VerifiedOtpResponse> {
+  async verifyOTP(otpVerifyRequestDto: VerifyOTPDto): Promise<VerifiedOtpResponse> {
     const { data } = await firstValueFrom(
       this.httpService
         .post(
@@ -116,12 +107,7 @@ export class AuthService {
             with: () => throwError(() => new Error('Verify OTP timeout')),
           }),
           catchError((error: AxiosError) => {
-            throw new HttpException(
-              error.response?.data
-                ? error.response.data['error_desc']
-                : error.response?.statusText,
-              error.response?.status as number,
-            );
+            throw new HttpException(error.response?.data ? error.response.data['error_desc'] : error.response?.statusText, error.response?.status as number);
           }),
         ),
     );
@@ -131,19 +117,27 @@ export class AuthService {
 
     // to-do: custom error code & error desc
     (resp.error_code = data.error_code), (resp.error_desc = data.error_desc);
-    resp.data_list = verifiedUsers as VerifiedOtp[];
+    if (data.data_list && verifiedUsers.scrt_err_msg === '0') {
+      const { token } = this.getTokensData(otpVerifyRequestDto.acntNo.toUpperCase(), 'auth.otpVerifySecret');
+      verifiedUsers.sid = token;
+      resp.data_list = verifiedUsers as VerifiedOtp[];
+      this.redis.hset(`user:${otpVerifyRequestDto.acntNo.toLowerCase()}`, {
+        otp_event: '',
+        otp_index: '',
+      });
+    }
     return resp;
   }
 
-  private getTokensData(data: { username: string }) {
-    const tokenExpiresIn = this.configService.getOrThrow('auth.expires', {
+  private getTokensData(data, expireTimeConfig) {
+    const tokenExpiresIn = this.configService.getOrThrow(expireTimeConfig, {
       infer: true,
     });
     const tokenExpires = Date.now() + ms(tokenExpiresIn);
 
     const token = this.jwtService.sign(
       {
-        sub: data.username,
+        sub: data,
       },
       {
         secret: this.configService.getOrThrow('auth.secret', { infer: true }),

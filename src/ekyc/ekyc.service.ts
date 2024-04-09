@@ -23,9 +23,7 @@ import {
 export class EkycService {
   constructor(private httpService: HttpService) {}
 
-  async openAccount(
-    openAccountPayload: EKYCOpenAccountPayloadDto,
-  ): Promise<EKYCOpenAccountResponseDto> {
+  async openAccount(openAccountPayload: EKYCOpenAccountPayloadDto): Promise<EKYCOpenAccountResponseDto> {
     // const { data } = await firstValueFrom(
     //   this.httpService.get('/wines/reds').pipe(
     //     timeout({
@@ -46,9 +44,7 @@ export class EkycService {
     };
   }
 
-  async checkAccountExist(
-    checkAccountExistPayload: EKYCCheckAccountExistPayloadDto,
-  ): Promise<EKYCCheckAccountExistResponseDto> {
+  async checkAccountExist(checkAccountExistPayload: EKYCCheckAccountExistPayloadDto): Promise<EKYCCheckAccountExistResponseDto> {
     console.log(checkAccountExistPayload);
     return {
       error_code: '',
@@ -58,9 +54,7 @@ export class EkycService {
     };
   }
 
-  async updateAccount(
-    updateAccountPayload: EKYCUpdateAccountPayloadDto,
-  ): Promise<EKYCUpdateAccountResponseDto> {
+  async updateAccount(updateAccountPayload: EKYCUpdateAccountPayloadDto): Promise<EKYCUpdateAccountResponseDto> {
     console.log(updateAccountPayload);
     return {
       error_code: '',
@@ -70,9 +64,7 @@ export class EkycService {
     };
   }
 
-  async getAccountInfo(
-    getAccountInfoPayload: EKYCGetAccountInfoPayloadDto,
-  ): Promise<EKYCGetAccountInfoResponseDto> {
+  async getAccountInfo(getAccountInfoPayload: EKYCGetAccountInfoPayloadDto): Promise<EKYCGetAccountInfoResponseDto> {
     console.log(getAccountInfoPayload);
     return {
       error_code: '',
@@ -82,9 +74,7 @@ export class EkycService {
     };
   }
 
-  async getBrokerInfo(
-    getBrokerInfoPayload: EKYCGetBrokerInfoPayloadDto,
-  ): Promise<EKYCGetBrokerInfoResponseDto> {
+  async getBrokerInfo(getBrokerInfoPayload: EKYCGetBrokerInfoPayloadDto): Promise<EKYCGetBrokerInfoResponseDto> {
     console.log(getBrokerInfoPayload);
     return {
       error_code: '',
@@ -94,9 +84,7 @@ export class EkycService {
     };
   }
 
-  async getBankInfo(
-    bankInfoPayload: EKYCGetBankPayloadDto,
-  ): Promise<EKYCGetBankResponseDto> {
+  async getBankInfo(bankInfoPayload: EKYCGetBankPayloadDto): Promise<EKYCGetBankResponseDto> {
     console.log(bankInfoPayload);
     return {
       error_code: '',

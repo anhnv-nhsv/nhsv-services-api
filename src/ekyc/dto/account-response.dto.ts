@@ -1,12 +1,5 @@
 import { BaseResponse } from 'src/utils/base-response/base-response';
-import {
-  CheckAccountExistDto,
-  GetAccountInfoDto,
-  GetBankDto,
-  GetBrokerInfoDto,
-  OpenAccountDto,
-  UpdateAccountDto,
-} from './ekyc-account.dto';
+import { CheckAccountExistDto, GetAccountInfoDto, GetBankDto, GetBrokerInfoDto, OpenAccountDto, UpdateAccountDto } from './ekyc-account.dto';
 
 class EKYCOpenAccountResponseDto extends BaseResponse(OpenAccountDto, {
   description: 'Cấu trúc data trả về',
@@ -17,13 +10,10 @@ class EKYCOpenAccountResponseDto extends BaseResponse(OpenAccountDto, {
   ],
 }) {}
 
-class EKYCCheckAccountExistResponseDto extends BaseResponse(
-  CheckAccountExistDto,
-  {
-    description: 'Cấu trúc data trả về',
-    example: [{ scrt_err_msg: 'A' }],
-  },
-) {}
+class EKYCCheckAccountExistResponseDto extends BaseResponse(CheckAccountExistDto, {
+  description: 'Cấu trúc data trả về',
+  example: [{ scrt_err_msg: 'A' }],
+}) {}
 
 class EKYCUpdateAccountResponseDto extends BaseResponse(UpdateAccountDto, {
   description: 'Cấu trúc data trả về',
@@ -68,11 +58,4 @@ class EKYCGetBankResponseDto extends BaseResponse(GetBankDto, {
   ],
 }) {}
 
-export {
-  EKYCOpenAccountResponseDto,
-  EKYCCheckAccountExistResponseDto,
-  EKYCUpdateAccountResponseDto,
-  EKYCGetAccountInfoResponseDto,
-  EKYCGetBrokerInfoResponseDto,
-  EKYCGetBankResponseDto,
-};
+export { EKYCOpenAccountResponseDto, EKYCCheckAccountExistResponseDto, EKYCUpdateAccountResponseDto, EKYCGetAccountInfoResponseDto, EKYCGetBrokerInfoResponseDto, EKYCGetBankResponseDto };
