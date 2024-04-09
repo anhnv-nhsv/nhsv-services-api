@@ -1,4 +1,4 @@
-import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AllConfigType } from './config/config.type';

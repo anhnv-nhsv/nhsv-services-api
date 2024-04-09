@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { HomeModule } from './home/home.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import appConfig from './config/app.config';
 import authConfig from './auth/config/auth.config';
 import { EkycModule } from './ekyc/ekyc.module';
@@ -10,6 +10,7 @@ import databaseConfig from './database/config/database.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSourceOptions, DataSource } from 'typeorm';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
+import { AllConfigType } from './config/config.type';
 
 @Module({
   imports: [
@@ -18,9 +19,13 @@ import { TypeOrmConfigService } from './database/typeorm-config.service';
       load: [authConfig, appConfig, databaseConfig],
       envFilePath: ['.env'],
     }),
-    RedisModule.forRoot({
-      type: 'single',
-      url: 'redis://localhost:6379',
+    RedisModule.forRootAsync({
+      useFactory: (configService: ConfigService<AllConfigType>) => ({
+        type: 'single',
+        url: configService.get('app.redisHost', { infer: true }),
+      }),
+      imports: [ConfigModule],
+      inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,

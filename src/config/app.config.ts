@@ -47,6 +47,9 @@ class EnvironmentVariablesValidator {
   @IsString()
   @IsOptional()
   APP_HEADER_LANGUAGE: string;
+
+  @IsString()
+  REDIS_HOST: string;
 }
 
 export default registerAs<AppConfig>('app', () => {
@@ -66,5 +69,6 @@ export default registerAs<AppConfig>('app', () => {
     apiPrefix: process.env.API_PREFIX || 'api',
     fallbackLanguage: process.env.APP_FALLBACK_LANGUAGE || 'en',
     headerLanguage: process.env.APP_HEADER_LANGUAGE || 'x-custom-lang',
+    redisHost: process.env.REDIS_HOST,
   };
 });

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -9,10 +9,12 @@ import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom, throwError, timeout } from 'rxjs';
 import { AxiosError } from 'axios';
 import { VerifyOTPDto } from './dto/verify-otp.dto';
-import { LoggedInInfoDto } from './domain/logged-in-info';
+import { LoggedInInfo } from './domain/logged-in-info';
 import { plainToClass } from 'class-transformer';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
+import { VerifiedOtp } from './domain/verified-otp';
+import { VerifiedOtpResponse } from './domain/verified-otp-response';
 
 @Injectable()
 export class AuthService {
@@ -52,35 +54,44 @@ export class AuthService {
         .pipe(
           timeout({
             each: 5000,
-            with: () => throwError(() => new Error('Verify user timeout')),
+            with: () => throwError(() => new Error('Login timeout')),
           }),
           catchError((error: AxiosError) => {
             console.log(error);
-            throwError(() => error);
+            throw new HttpException(
+              error.response?.data
+                ? error.response.data['error_desc']
+                : error.response?.statusText,
+              error.response?.status as number,
+            );
           }),
         ),
     );
-    console.log('data', data);
-    const loggedUsers = plainToClass(LoggedInInfoDto, data.data_list);
-    // set data to response
-    const { token } = this.getTokensData({
-      username: loggedUsers[0].user_name,
-    });
     const auth = new AuthResponse();
-    (auth.error_code = '0000'), (auth.error_desc = 'asd');
-    loggedUsers[0].otp_event = token;
-    auth.data_list = loggedUsers as LoggedInInfoDto[];
-    // to-do: set redis key-value
-    this.redis.hset(`user:${authLoginDto.username}`, {
-      pass: authLoginDto.password,
-      otp_event: token,
-      otp_index: loggedUsers[0].otp_index,
-    });
+
+    // to-do: custom error code & error desc
+    (auth.error_code = data.error_code), (auth.error_desc = data.error_desc);
+    if (data.data_list) {
+      const loggedUsers = plainToClass(LoggedInInfo, data.data_list);
+      // set data to response
+      const { token } = this.getTokensData({
+        username: loggedUsers[0].user_name,
+      });
+      loggedUsers[0].otp_event = token;
+      auth.data_list = loggedUsers as LoggedInInfo[];
+      this.redis.hset(`user:${authLoginDto.username}`, {
+        pass: authLoginDto.password,
+        otp_event: token,
+        otp_index: loggedUsers[0].otp_index,
+      });
+    }
     return auth;
   }
 
   async sendOTP() {}
-  async verifyOTP(otpVerifyRequestDto: VerifyOTPDto) {
+  async verifyOTP(
+    otpVerifyRequestDto: VerifyOTPDto,
+  ): Promise<VerifiedOtpResponse> {
     const { data } = await firstValueFrom(
       this.httpService
         .post(
@@ -101,16 +112,27 @@ export class AuthService {
         )
         .pipe(
           timeout({
-            each: 2000,
+            each: 5000,
             with: () => throwError(() => new Error('Verify OTP timeout')),
           }),
           catchError((error: AxiosError) => {
-            console.log(error);
-            return throwError(error);
+            throw new HttpException(
+              error.response?.data
+                ? error.response.data['error_desc']
+                : error.response?.statusText,
+              error.response?.status as number,
+            );
           }),
         ),
     );
-    console.log(data);
+    const verifiedUsers = plainToClass(VerifiedOtp, data.data_list);
+
+    const resp = new VerifiedOtpResponse();
+
+    // to-do: custom error code & error desc
+    (resp.error_code = data.error_code), (resp.error_desc = data.error_desc);
+    resp.data_list = verifiedUsers as VerifiedOtp[];
+    return resp;
   }
 
   private getTokensData(data: { username: string }) {

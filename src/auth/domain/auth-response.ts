@@ -1,7 +1,7 @@
 import { BaseResponse } from 'src/utils/base-response/base-response';
-import { LoggedInInfoDto } from './logged-in-info';
+import { LoggedInInfo } from './logged-in-info';
 
-export class AuthResponse extends BaseResponse(LoggedInInfoDto, {
+export class AuthResponse extends BaseResponse(LoggedInInfo, {
   description: 'Cấu trúc data trả về',
   example: [
     {
