@@ -1,44 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, Matches, MaxLength, MinLength } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
-class EKYCOpenAccountPayloadDto {
-  @ApiProperty({
-    description: 'Phân loại đầu tư\n\n1: Cá nhân\n\n2: Tổ chức',
-    example: '1',
-  })
-  @Matches('^(1|2)$')
-  @IsNotEmpty()
-  grp_tp: string;
-
-  @ApiProperty({
-    description: 'Số điện thoại',
-    example: '0912345678',
-  })
-  @IsNotEmpty()
-  @MaxLength(10, { message: 'Độ dài tối đa của SDT là 10 số' })
-  mobile: string;
-
-  @ApiProperty({
-    description: 'Email',
-    example: 'abc@abc.com',
-  })
-  @IsNotEmpty()
-  @IsEmail()
-  email: string;
-}
-
-class EKYCCheckAccountExistPayloadDto {
-  @ApiProperty({
-    description: 'Số CMND/CCCD',
-    example: '0912345678',
-  })
-  @IsNotEmpty()
-  @MinLength(9, { message: 'Độ dài tối thiểu của CMND/CCCD là 9 số' })
-  @MaxLength(12, { message: 'Độ dài tối đa của CMND/CCCD là 12 số' })
-  idno: string;
-}
-
-class EKYCUpdateAccountPayloadDto {
+export class UpdateAccountDto {
   @ApiProperty({
     description: 'Id tài khoản của khách hàng - lấy ở field os_seq_no của open account',
     example: '6591',
@@ -341,53 +304,3 @@ class EKYCUpdateAccountPayloadDto {
   @IsNotEmpty()
   send_email_cntr_yn: string;
 }
-
-class EKYCGetAccountInfoPayloadDto {
-  @ApiProperty({
-    description: 'Số CMND/CCCD',
-    example: '0912345678',
-  })
-  @IsNotEmpty()
-  @MinLength(9, { message: 'Độ dài tối thiểu của CMND/CCCD là 9 số' })
-  @MaxLength(12, { message: 'Độ dài tối đa của CMND/CCCD là 12 số' })
-  idno: string;
-}
-
-class EKYCGetBrokerInfoPayloadDto {
-  @ApiProperty({
-    description: 'Mã nhân viên',
-    example: 'bangdn',
-  })
-  @IsNotEmpty()
-  emp_no: string;
-
-  @ApiProperty({
-    description: `Mã chi nhánh. Nếu muốn tra cứu ALL thì truyền '%'`,
-    example: '100',
-  })
-  brch_cd: string;
-
-  @ApiProperty({
-    description: 'Có phải nhân viên nghiệp vụ hay không Y/N',
-    example: 'Y',
-  })
-  @Matches('^(Y|N)$')
-  biz_yn: string;
-}
-
-class EKYCGetBankPayloadDto {
-  @ApiProperty({
-    description: 'brch_cd: list branch\n\nbank_cd_off: list bank\n\nbank_brch: list chi nhánh của bank',
-    example: 'bangdn',
-  })
-  @IsNotEmpty()
-  code_tp: string;
-
-  @ApiProperty({
-    description: 'Nếu type=“bank_brch” thì cần truyền thêm input “bank_code” => Giá trị input “bank_code” lấy từ output “code” với type=“ bank_cd_off”',
-    example: 'bangdn',
-  })
-  bank_code: string;
-}
-
-export { EKYCOpenAccountPayloadDto, EKYCCheckAccountExistPayloadDto, EKYCUpdateAccountPayloadDto, EKYCGetAccountInfoPayloadDto, EKYCGetBrokerInfoPayloadDto, EKYCGetBankPayloadDto };
