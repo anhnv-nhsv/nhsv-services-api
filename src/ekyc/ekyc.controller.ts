@@ -1,22 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { EkycService } from './ekyc.service';
-import {
-  EKYCCheckAccountExistPayloadDto,
-  EKYCGetAccountInfoPayloadDto,
-  EKYCGetBankPayloadDto,
-  EKYCGetBrokerInfoPayloadDto,
-  EKYCOpenAccountPayloadDto,
-  EKYCUpdateAccountPayloadDto,
-} from './dto/account-request.dto';
-import {
-  EKYCCheckAccountExistResponseDto,
-  EKYCGetAccountInfoResponseDto,
-  EKYCGetBankResponseDto,
-  EKYCGetBrokerInfoResponseDto,
-  EKYCOpenAccountResponseDto,
-  EKYCUpdateAccountResponseDto,
-} from './dto/account-response.dto';
+import { EKYCOpenAccountResponseDto } from './dto/account-response.dto';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { OpenAccountDto } from './dto/ekyc-account.dto';
 
 @ApiTags('EKYC Open Account')
 @ApiResponse({
@@ -29,49 +15,43 @@ export class EkycController {
 
   @Post('account/create')
   @ApiOkResponse({ type: EKYCOpenAccountResponseDto })
-  public openAccount(
-    @Body() openAccountPayload: EKYCOpenAccountPayloadDto,
-  ): Promise<EKYCOpenAccountResponseDto> {
-    return this.ekycService.openAccount(openAccountPayload);
+  public openAccount(@Body() openAccountDto: OpenAccountDto): Promise<EKYCOpenAccountResponseDto> {
+    return this.ekycService.openAccount(openAccountDto);
   }
 
-  @Post('account/status')
-  @ApiOkResponse({ type: EKYCCheckAccountExistResponseDto })
-  public checkAccountExist(
-    @Body() checkAccountExistPayload: EKYCCheckAccountExistPayloadDto,
-  ): Promise<EKYCCheckAccountExistResponseDto> {
-    return this.ekycService.checkAccountExist(checkAccountExistPayload);
-  }
+  // @Get('account/status')
+  // @ApiOkResponse({ type: EKYCCheckAccountExistResponseDto })
+  // public checkAccountExist(@Body() checkAccountExistPayload: EKYCCheckAccountExistPayloadDto): Promise<EKYCCheckAccountExistResponseDto> {
+  //   return this.ekycService.checkAccountExist(checkAccountExistPayload);
+  // }
 
-  @Post('account/update')
-  @ApiOkResponse({ type: EKYCUpdateAccountResponseDto })
-  public updateAccount(
-    @Body() updateAccountPayload: EKYCUpdateAccountPayloadDto,
-  ): Promise<EKYCUpdateAccountResponseDto> {
-    return this.ekycService.updateAccount(updateAccountPayload);
-  }
+  // @Get('account/vsd-status')
+  // @ApiOkResponse({ type: EKYCCheckAccountExistResponseDto })
+  // public getVSDStatus(@Body() bankInfoPayload: EKYCGetBankPayloadDto): Promise<EKYCGetBankResponseDto> {
+  //   return this.ekycService.getVSDStatus(bankInfoPayload);
+  // }
 
-  @Get('account/info')
-  @ApiOkResponse({ type: EKYCGetAccountInfoResponseDto })
-  public getAccountInfo(
-    @Body() getAccountInfoPayload: EKYCGetAccountInfoPayloadDto,
-  ): Promise<EKYCGetAccountInfoResponseDto> {
-    return this.ekycService.getAccountInfo(getAccountInfoPayload);
-  }
+  // @Post('account/update')
+  // @ApiOkResponse({ type: EKYCUpdateAccountResponseDto })
+  // public updateAccount(@Body() updateAccountPayload: EKYCUpdateAccountPayloadDto): Promise<EKYCUpdateAccountResponseDto> {
+  //   return this.ekycService.updateAccount(updateAccountPayload);
+  // }
 
-  @Get('broker/info')
-  @ApiOkResponse({ type: EKYCGetBrokerInfoResponseDto })
-  public getBrokerInfo(
-    @Body() getBrokerInfoPayload: EKYCGetBrokerInfoPayloadDto,
-  ): Promise<EKYCGetBrokerInfoResponseDto> {
-    return this.ekycService.getBrokerInfo(getBrokerInfoPayload);
-  }
+  // @Get('account/info')
+  // @ApiOkResponse({ type: EKYCGetAccountInfoResponseDto })
+  // public getAccountInfo(@Body() getAccountInfoPayload: EKYCGetAccountInfoPayloadDto): Promise<EKYCGetAccountInfoResponseDto> {
+  //   return this.ekycService.getAccountInfo(getAccountInfoPayload);
+  // }
 
-  @Get('bank-branch')
-  @ApiOkResponse({ type: EKYCGetBankResponseDto })
-  public getBankInfo(
-    @Body() bankInfoPayload: EKYCGetBankPayloadDto,
-  ): Promise<EKYCGetBankResponseDto> {
-    return this.ekycService.getBankInfo(bankInfoPayload);
-  }
+  // @Get('broker/info')
+  // @ApiOkResponse({ type: EKYCGetBrokerInfoResponseDto })
+  // public getBrokerInfo(@Body() getBrokerInfoPayload: EKYCGetBrokerInfoPayloadDto): Promise<EKYCGetBrokerInfoResponseDto> {
+  //   return this.ekycService.getBrokerInfo(getBrokerInfoPayload);
+  // }
+
+  // @Get('bank-branch')
+  // @ApiOkResponse({ type: EKYCGetBankResponseDto })
+  // public getBankInfo(@Body() bankInfoPayload: EKYCGetBankPayloadDto): Promise<EKYCGetBankResponseDto> {
+  //   return this.ekycService.getBankInfo(bankInfoPayload);
+  // }
 }

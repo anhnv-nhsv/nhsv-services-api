@@ -46,8 +46,7 @@ export class LoggedInInfo {
 
   @ApiProperty({
     example: 'zMn3OPHPu3BFc',
-    description:
-      'Giá trị đã mã hóa của Số OTP tại chỉ số otp_index trên bảng ma trận OTP.',
+    description: 'Giá trị đã mã hóa của Số OTP tại chỉ số otp_index trên bảng ma trận OTP.',
   })
   otp_pass?: string;
 
@@ -62,8 +61,7 @@ export class LoggedInInfo {
 
   @ApiProperty({
     example: ' ',
-    description:
-      'Khóa tạo mã S-OTP. Sử dụng để tạo mã S- OTP, lưu ý mã S-OTP được tạo ra sẽ có hiệu lực trong 60s',
+    description: 'Khóa tạo mã S-OTP. Sử dụng để tạo mã S- OTP, lưu ý mã S-OTP được tạo ra sẽ có hiệu lực trong 60s',
   })
   sotp_sec?: string;
 

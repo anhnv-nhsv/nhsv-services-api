@@ -37,8 +37,7 @@ class GetAccountInfoDto {
 
 class GetBrokerInfoDto {
   @ApiProperty({
-    description:
-      'Có phải nhân viên hay không\n\nY: Là nhân viên\n\nN: Không phải là nhân viên',
+    description: 'Có phải nhân viên hay không\n\nY: Là nhân viên\n\nN: Không phải là nhân viên',
     example: 'Y',
   })
   chk: string;
@@ -64,11 +63,4 @@ class GetBankDto {
   code_nm: string;
 }
 
-export {
-  OpenAccountDto,
-  CheckAccountExistDto,
-  UpdateAccountDto,
-  GetAccountInfoDto,
-  GetBrokerInfoDto,
-  GetBankDto,
-};
+export { OpenAccountDto, CheckAccountExistDto, UpdateAccountDto, GetAccountInfoDto, GetBrokerInfoDto, GetBankDto };
