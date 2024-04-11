@@ -11,6 +11,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSourceOptions, DataSource } from 'typeorm';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { AllConfigType } from './config/config.type';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -33,6 +34,20 @@ import { AllConfigType } from './config/config.type';
         return new DataSource(options).initialize();
       },
     }),
+    {
+      ...HttpModule.registerAsync({
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: async (configService: ConfigService<AllConfigType>) => ({
+          baseURL: configService.get('auth.lotteBaseUrl', { infer: true }),
+          headers: {
+            apiKey: configService.get('auth.lotteApiKey', { infer: true }),
+            'User-Agent': 'PostmanRuntime/7.37.0',
+          },
+        }),
+      }),
+      global: true,
+    },
     AuthModule,
     HomeModule,
     EkycModule,
