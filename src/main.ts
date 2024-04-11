@@ -9,10 +9,11 @@ import {
   ValidationPipe,
   VersioningType,
 } from '@nestjs/common';
-import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
+import { ResolvePromisesInterceptor } from './interceptor/serializer.interceptor';
 import validationOptions from './utils/validation-options';
 import { RedocModule } from 'nest-redoc';
 import { HttpExceptionFilter } from './filter/http-exception.filter';
+import { PostStatusInterceptor } from './interceptor/post-status.interceptor';
 
 declare const module: any;
 
@@ -36,6 +37,7 @@ async function bootstrap() {
     // ResolvePromisesInterceptor is used to resolve promises in responses because class-transformer can't do it
     // https://github.com/typestack/class-transformer/issues/549
     new ResolvePromisesInterceptor(),
+    new PostStatusInterceptor(),
     new ClassSerializerInterceptor(app.get(Reflector)),
   );
   app.useGlobalFilters(new HttpExceptionFilter());
