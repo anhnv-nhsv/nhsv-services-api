@@ -1,4 +1,4 @@
-import { HttpStatus, UnprocessableEntityException, ValidationError, ValidationPipeOptions } from '@nestjs/common';
+import { BadRequestException, HttpStatus, ValidationError, ValidationPipeOptions } from '@nestjs/common';
 
 function generateErrors(errors: ValidationError[]) {
   return errors.reduce(
@@ -13,10 +13,10 @@ function generateErrors(errors: ValidationError[]) {
 const validationOptions: ValidationPipeOptions = {
   transform: true,
   whitelist: true,
-  errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+  errorHttpStatusCode: HttpStatus.BAD_REQUEST,
   exceptionFactory: (errors: ValidationError[]) => {
-    return new UnprocessableEntityException({
-      status: HttpStatus.UNPROCESSABLE_ENTITY,
+    return new BadRequestException({
+      status: HttpStatus.BAD_REQUEST,
       errors: generateErrors(errors),
     });
   },
