@@ -1,17 +1,11 @@
 import { Module } from '@nestjs/common';
 import { EkycController } from './ekyc.controller';
 import { EkycService } from './ekyc.service';
-import { HttpModule } from '@nestjs/axios';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { SeqTrackingEntity } from './entities/seq-tracking.entity';
 
 @Module({
-  imports: [
-    HttpModule.register({
-      baseURL: process.env.LOTTE_BASE_URL,
-      headers: {
-        apiKey: process.env.LOTTE_API_KEY,
-      },
-    }),
-  ],
+  imports: [TypeOrmModule.forFeature([SeqTrackingEntity])],
   controllers: [EkycController],
   providers: [EkycService],
 })

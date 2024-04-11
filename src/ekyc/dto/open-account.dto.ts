@@ -25,4 +25,11 @@ export class OpenAccountDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
+
+  @ApiProperty({
+    description: 'Nguồn. 1: Stag',
+    example: '1',
+  })
+  @IsNotEmpty()
+  source: string;
 }

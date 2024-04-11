@@ -2,7 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { EkycService } from './ekyc.service';
 import { EKYCOpenAccountResponseDto } from './dto/account-response.dto';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { OpenAccountDto } from './dto/ekyc-account.dto';
+import { OpenAccountDto } from './dto/open-account.dto';
 
 @ApiTags('EKYC Open Account')
 @ApiResponse({
