@@ -25,13 +25,6 @@ export class AuthService {
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
-  private lotteBaseUrl = this.configService.getOrThrow('auth.lotteBaseUrl', {
-    infer: true,
-  });
-  private lotteApiKey = this.configService.getOrThrow('auth.lotteApiKey', {
-    infer: true,
-  });
-
   async loginViaLotte(authLoginDto: LoginDto): Promise<AuthResponse> {
     const { data } = await firstValueFrom(
       this.httpService
@@ -43,13 +36,6 @@ export class AuthService {
             useraddr: authLoginDto.useraddr,
             lang_code: authLoginDto.langCode,
           }),
-          {
-            baseURL: this.lotteBaseUrl,
-            headers: {
-              apiKey: this.lotteApiKey,
-              'User-Agent': 'PostmanRuntime/7.37.0',
-            },
-          },
         )
         .pipe(
           timeout({
@@ -63,20 +49,21 @@ export class AuthService {
         ),
     );
     const auth = new AuthResponse();
-
-    // to-do: custom error code & error desc
-    (auth.error_code = data.error_code), (auth.error_desc = data.error_desc);
-    if (data.data_list) {
+    if (data.hasOwnProperty('error_code')) {
+      // to-do: custom error code & error desc
+      (auth.error_code = data.error_code), (auth.error_desc = data.error_desc);
       const loggedUsers = plainToClass(LoggedInInfo, data.data_list);
-      // set data to response
-      const { token } = this.getTokensData(loggedUsers[0].user_name, 'auth.expires');
-      loggedUsers[0].otp_event = token;
-      auth.data_list = loggedUsers as LoggedInInfo[];
-      this.redis.hset(`user:${authLoginDto.username}`, {
-        pass: authLoginDto.password,
-        otp_event: token,
-        otp_index: loggedUsers[0].otp_index,
-      });
+      if (data.data_list.length > 0) {
+        // set data to response
+        const { token } = this.getTokensData(loggedUsers[0].user_name, 'auth.expires');
+        loggedUsers[0].otp_event = token;
+        auth.data_list = loggedUsers as LoggedInInfo[];
+        this.redis.hset(`user:${authLoginDto.username}`, {
+          pass: authLoginDto.password,
+          otp_event: token,
+          otp_index: loggedUsers[0].otp_index,
+        });
+      }
     }
     return auth;
   }
@@ -85,22 +72,12 @@ export class AuthService {
   async verifyOTP(otpVerifyRequestDto: VerifyOTPDto): Promise<VerifiedOtpResponse> {
     const { data } = await firstValueFrom(
       this.httpService
-        .post(
-          '/tsol/apikey/tuxsvc/account/user/urs-otp-verify',
-          {
-            acnt_no: otpVerifyRequestDto.acntNo.toUpperCase(),
-            otp_val: otpVerifyRequestDto.otpVal,
-            otp_enc: otpVerifyRequestDto.otpEnc,
-            otp_ind: otpVerifyRequestDto.otpInd,
-          },
-          {
-            baseURL: this.lotteBaseUrl,
-            headers: {
-              apiKey: this.lotteApiKey,
-              'User-Agent': 'PostmanRuntime/7.37.0',
-            },
-          },
-        )
+        .post('/tsol/apikey/tuxsvc/account/user/urs-otp-verify', {
+          acnt_no: otpVerifyRequestDto.acntNo.toUpperCase(),
+          otp_val: otpVerifyRequestDto.otpVal,
+          otp_enc: otpVerifyRequestDto.otpEnc,
+          otp_ind: otpVerifyRequestDto.otpInd,
+        })
         .pipe(
           timeout({
             each: 5000,
@@ -114,17 +91,18 @@ export class AuthService {
     const verifiedUsers = plainToClass(VerifiedOtp, data.data_list);
 
     const resp = new VerifiedOtpResponse();
-
-    // to-do: custom error code & error desc
-    (resp.error_code = data.error_code), (resp.error_desc = data.error_desc);
-    if (data.data_list && verifiedUsers.scrt_err_msg === '0') {
-      const { token } = this.getTokensData(otpVerifyRequestDto.acntNo.toUpperCase(), 'auth.otpVerifySecret');
-      verifiedUsers.sid = token;
-      resp.data_list = verifiedUsers as VerifiedOtp[];
-      this.redis.hset(`user:${otpVerifyRequestDto.acntNo.toLowerCase()}`, {
-        otp_event: '',
-        otp_index: '',
-      });
+    if (data.hasOwnProperty('error_code')) {
+      // to-do: custom error code & error desc
+      (resp.error_code = data.error_code), (resp.error_desc = data.error_desc);
+      if (data.data_list && verifiedUsers.scrt_err_msg === '0') {
+        const { token } = this.getTokensData(otpVerifyRequestDto.acntNo.toUpperCase(), 'auth.otpVerifySecret');
+        verifiedUsers.sid = token;
+        resp.data_list = verifiedUsers as VerifiedOtp[];
+        this.redis.hset(`user:${otpVerifyRequestDto.acntNo.toLowerCase()}`, {
+          otp_event: '',
+          otp_index: '',
+        });
+      }
     }
     return resp;
   }
