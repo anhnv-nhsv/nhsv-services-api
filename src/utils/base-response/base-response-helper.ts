@@ -5,7 +5,7 @@ import { IsBoolean, IsString, ValidateNested } from 'class-validator';
 
 type Constructor<T = object> = new (...args: any[]) => T;
 
-export function BaseResponse<TBase extends Constructor>(Base: TBase, options?: ApiPropertyOptions | undefined) {
+export function BaseResponseHelper<TBase extends Constructor>(Base: TBase, options?: ApiPropertyOptions | undefined) {
   class ResponseDTO {
     @ApiProperty({ description: 'Mã lỗi thực hiện API', example: '0000' })
     @IsString()

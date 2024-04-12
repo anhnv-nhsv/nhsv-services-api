@@ -25,7 +25,8 @@ export class AuthController {
   public sendOTP() {}
 
   @Post('otp/verify')
-  public verifyOTP(otpVerifyRequestDto: VerifyOTPDto): Promise<VerifiedOtpResponse> {
+  @ApiOkResponse({ type: VerifiedOtpResponse })
+  public verifyOTP(@Body() otpVerifyRequestDto: VerifyOTPDto): Promise<VerifiedOtpResponse> {
     return this.authService.verifyOTP(otpVerifyRequestDto);
   }
 }

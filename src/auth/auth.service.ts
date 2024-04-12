@@ -26,27 +26,15 @@ export class AuthService {
   ) {}
 
   async loginViaLotte(authLoginDto: LoginDto): Promise<AuthResponse> {
-    const { data } = await firstValueFrom(
-      this.httpService
-        .post(
-          '/tsol/apikey/tuxsvc/account/user/verify',
-          new URLSearchParams({
-            username: authLoginDto.username,
-            password: authLoginDto.password,
-            useraddr: authLoginDto.useraddr,
-            lang_code: authLoginDto.langCode,
-          }),
-        )
-        .pipe(
-          timeout({
-            each: 5000,
-            with: () => throwError(() => new Error('Login timeout')),
-          }),
-          catchError((error: AxiosError) => {
-            console.log(error);
-            throw new HttpException(error.response?.data ? error.response.data['error_desc'] : error.response?.statusText, error.response?.status as number);
-          }),
-        ),
+    const data = await this.callLotteService(
+      'post',
+      '/tsol/apikey/tuxsvc/account/user/verify',
+      new URLSearchParams({
+        username: authLoginDto.username,
+        password: authLoginDto.password,
+        useraddr: authLoginDto.useraddr,
+        lang_code: authLoginDto.langCode,
+      }),
     );
     const auth = new AuthResponse();
     if (data.hasOwnProperty('error_code')) {
@@ -70,32 +58,20 @@ export class AuthService {
 
   async sendOTP() {}
   async verifyOTP(otpVerifyRequestDto: VerifyOTPDto): Promise<VerifiedOtpResponse> {
-    const { data } = await firstValueFrom(
-      this.httpService
-        .post('/tsol/apikey/tuxsvc/account/user/urs-otp-verify', {
-          acnt_no: otpVerifyRequestDto.acntNo.toUpperCase(),
-          otp_val: otpVerifyRequestDto.otpVal,
-          otp_enc: otpVerifyRequestDto.otpEnc,
-          otp_ind: otpVerifyRequestDto.otpInd,
-        })
-        .pipe(
-          timeout({
-            each: 5000,
-            with: () => throwError(() => new Error('Verify OTP timeout')),
-          }),
-          catchError((error: AxiosError) => {
-            throw new HttpException(error.response?.data ? error.response.data['error_desc'] : error.response?.statusText, error.response?.status as number);
-          }),
-        ),
-    );
-    const verifiedUsers = plainToClass(VerifiedOtp, data.data_list);
+    const data = await this.callLotteService('post', '/tsol/apikey/tuxsvc/account/user/urs-otp-verify', {
+      acnt_no: otpVerifyRequestDto.acntNo.toUpperCase(),
+      otp_val: otpVerifyRequestDto.otpVal,
+      otp_enc: otpVerifyRequestDto.otpEnc,
+      otp_ind: otpVerifyRequestDto.otpInd,
+    });
 
     const resp = new VerifiedOtpResponse();
     if (data.hasOwnProperty('error_code')) {
       // to-do: custom error code & error desc
       (resp.error_code = data.error_code), (resp.error_desc = data.error_desc);
-      if (data.data_list && verifiedUsers.scrt_err_msg === '0') {
-        const { token } = this.getTokensData(otpVerifyRequestDto.acntNo.toUpperCase(), 'auth.otpVerifySecret');
+      const verifiedUsers = plainToClass(VerifiedOtp, data.data_list);
+      if (data.data_list.length > 0 && verifiedUsers[0].scrt_err_msg === '0') {
+        const { token } = this.getTokensData(otpVerifyRequestDto.acntNo.toUpperCase(), 'auth.expires');
         verifiedUsers.sid = token;
         resp.data_list = verifiedUsers as VerifiedOtp[];
         this.redis.hset(`user:${otpVerifyRequestDto.acntNo.toLowerCase()}`, {
@@ -126,5 +102,27 @@ export class AuthService {
       token,
       tokenExpires,
     };
+  }
+
+  private async callLotteService(method: string, url: string, payload: any) {
+    const { data } = await firstValueFrom(
+      this.httpService
+        .request({
+          method: method,
+          url: url,
+          data: payload,
+        })
+        .pipe(
+          timeout({
+            each: 5000,
+            with: () => throwError(() => new Error('Login timeout')),
+          }),
+          catchError((error: AxiosError) => {
+            console.log(error);
+            throw new HttpException(error.response?.data ? error.response.data['error_desc'] : error.response?.statusText, error.response?.status as number);
+          }),
+        ),
+    );
+    return data;
   }
 }

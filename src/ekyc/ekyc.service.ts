@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { HttpException, Injectable } from '@nestjs/common';
 // import { AxiosError } from 'axios';
 // import { catchError, firstValueFrom, throwError, timeout } from 'rxjs';
-import { EKYCOpenAccountResponseDto } from './dto/account-response.dto';
+import { EKYCOpenAccountResponseDto } from './domain/account-response.dto';
 import { AxiosError } from 'axios';
 import { firstValueFrom, timeout, throwError, catchError } from 'rxjs';
 import { OpenAccountDto } from './dto/open-account.dto';
@@ -37,8 +37,7 @@ export class EkycService {
     );
     const seqInfo = plainToClass(EKYCOpenAccountResponseDto, data);
     const seqTracking = new SeqTrackingEntity();
-    console.log(seqInfo);
-    seqTracking.osSeqNo = seqInfo.data_list[0].os_seq_no;
+    // seqTracking.osSeqNo = seqInfo.data_list[0].os_seq_no;
     seqTracking.partnerId = +openAccountDto.source;
     this.seqTrackingRepository.save(seqTracking);
     return {
