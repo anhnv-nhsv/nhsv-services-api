@@ -1,12 +1,12 @@
 import { BaseResponseHelper } from 'src/utils/base-response/base-response-helper';
-import { CheckAccountExistDto } from '../dto/check-account-exist.dto';
-import { GetAccountInfoDto } from '../dto/get-account-info.dto';
-import { GetBankDto } from '../dto/get-bank.dto';
-import { GetBrokerInfoDto } from '../dto/get-broker-info.dto';
-import { OpenAccountDto } from '../dto/open-account.dto';
-import { UpdateAccountDto } from '../dto/update-account.dto';
+import { CheckAccountExist } from './check-account-exist';
+import { GetAccountInfo } from './get-account-info';
+import { GetBank } from './get-bank';
+import { GetBrokerInfo } from './get-broker-info';
+import { OpenAccount } from './open-account';
+import { UpdateAccount } from './update-account';
 
-class EKYCOpenAccountResponseDto extends BaseResponseHelper(OpenAccountDto, {
+class EKYCOpenAccountResponseDto extends BaseResponseHelper(OpenAccount, {
   description: 'Cấu trúc data trả về',
   example: [
     {
@@ -15,12 +15,12 @@ class EKYCOpenAccountResponseDto extends BaseResponseHelper(OpenAccountDto, {
   ],
 }) {}
 
-class EKYCCheckAccountExistResponseDto extends BaseResponseHelper(CheckAccountExistDto, {
+class EKYCCheckAccountExistResponseDto extends BaseResponseHelper(CheckAccountExist, {
   description: 'Cấu trúc data trả về',
   example: [{ scrt_err_msg: 'A' }],
 }) {}
 
-class EKYCUpdateAccountResponseDto extends BaseResponseHelper(UpdateAccountDto, {
+class EKYCUpdateAccountResponseDto extends BaseResponseHelper(UpdateAccount, {
   description: 'Cấu trúc data trả về',
   example: [
     {
@@ -29,7 +29,7 @@ class EKYCUpdateAccountResponseDto extends BaseResponseHelper(UpdateAccountDto, 
   ],
 }) {}
 
-class EKYCGetAccountInfoResponseDto extends BaseResponseHelper(GetAccountInfoDto, {
+class EKYCGetAccountInfoResponseDto extends BaseResponseHelper(GetAccountInfo, {
   description: 'Cấu trúc data trả về',
   example: [
     {
@@ -39,7 +39,7 @@ class EKYCGetAccountInfoResponseDto extends BaseResponseHelper(GetAccountInfoDto
   ],
 }) {}
 
-class EKYCGetBrokerInfoResponseDto extends BaseResponseHelper(GetBrokerInfoDto, {
+class EKYCGetBrokerInfoResponseDto extends BaseResponseHelper(GetBrokerInfo, {
   description: 'Cấu trúc data trả về',
   example: [
     {
@@ -49,7 +49,7 @@ class EKYCGetBrokerInfoResponseDto extends BaseResponseHelper(GetBrokerInfoDto, 
   ],
 }) {}
 
-class EKYCGetBankResponseDto extends BaseResponseHelper(GetBankDto, {
+class EKYCGetBankResponseDto extends BaseResponseHelper(GetBank, {
   description: 'Cấu trúc data trả về',
   example: [
     {

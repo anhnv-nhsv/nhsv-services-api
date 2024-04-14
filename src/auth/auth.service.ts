@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -6,8 +6,6 @@ import { AllConfigType } from 'src/config/config.type';
 import ms from 'ms';
 import { AuthResponse } from './domain/auth/auth-response';
 import { HttpService } from '@nestjs/axios';
-import { catchError, firstValueFrom, throwError, timeout } from 'rxjs';
-import { AxiosError } from 'axios';
 import { VerifyOTPDto } from './dto/verify-otp.dto';
 import { LoggedInInfo } from './domain/auth/logged-in-info';
 import { plainToClass } from 'class-transformer';
@@ -15,6 +13,7 @@ import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
 import { VerifiedOtp } from './domain/verify-otp/verified-otp';
 import { VerifiedOtpResponse } from './domain/verify-otp/verified-otp-response';
+import { callLotteService } from 'src/utils/axios-utils';
 
 @Injectable()
 export class AuthService {
@@ -26,7 +25,7 @@ export class AuthService {
   ) {}
 
   async loginViaLotte(authLoginDto: LoginDto): Promise<AuthResponse> {
-    const data = await this.callLotteService(
+    const data = await callLotteService(
       'post',
       '/tsol/apikey/tuxsvc/account/user/verify',
       new URLSearchParams({
@@ -58,7 +57,7 @@ export class AuthService {
 
   async sendOTP() {}
   async verifyOTP(otpVerifyRequestDto: VerifyOTPDto): Promise<VerifiedOtpResponse> {
-    const data = await this.callLotteService('post', '/tsol/apikey/tuxsvc/account/user/urs-otp-verify', {
+    const data = await callLotteService('post', '/tsol/apikey/tuxsvc/account/user/urs-otp-verify', {
       acnt_no: otpVerifyRequestDto.acntNo.toUpperCase(),
       otp_val: otpVerifyRequestDto.otpVal,
       otp_enc: otpVerifyRequestDto.otpEnc,
@@ -102,27 +101,5 @@ export class AuthService {
       token,
       tokenExpires,
     };
-  }
-
-  private async callLotteService(method: string, url: string, payload: any) {
-    const { data } = await firstValueFrom(
-      this.httpService
-        .request({
-          method: method,
-          url: url,
-          data: payload,
-        })
-        .pipe(
-          timeout({
-            each: 5000,
-            with: () => throwError(() => new Error('Login timeout')),
-          }),
-          catchError((error: AxiosError) => {
-            console.log(error);
-            throw new HttpException(error.response?.data ? error.response.data['error_desc'] : error.response?.statusText, error.response?.status as number);
-          }),
-        ),
-    );
-    return data;
   }
 }
