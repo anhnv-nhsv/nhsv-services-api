@@ -40,12 +40,12 @@ export class AuthService {
     if (data.hasOwnProperty('error_code')) {
       // to-do: custom error code & error desc
       (auth.error_code = data.error_code), (auth.error_desc = data.error_desc);
-      const loggedUsers = plainToClass(LoggedInInfo, data.data_list);
+      const loggedUsers = plainToClass(LoggedInInfo, data.data_list) as LoggedInInfo[];
       if (data.data_list.length > 0) {
         // set data to response
         const { token } = this.getTokensData(loggedUsers[0].user_name, 'auth.expires');
         loggedUsers[0].otp_event = token;
-        auth.data_list = loggedUsers as LoggedInInfo[];
+        auth.data_list = loggedUsers;
         this.redis.hset(`user:${authLoginDto.username}`, {
           pass: authLoginDto.password,
           otp_event: token,
@@ -69,11 +69,11 @@ export class AuthService {
     if (data.hasOwnProperty('error_code')) {
       // to-do: custom error code & error desc
       (resp.error_code = data.error_code), (resp.error_desc = data.error_desc);
-      const verifiedUsers = plainToClass(VerifiedOtp, data.data_list);
+      const verifiedUsers = plainToClass(VerifiedOtp, data.data_list) as VerifiedOtp[];
       if (data.data_list.length > 0 && verifiedUsers[0].scrt_err_msg === '0') {
         const { token } = this.getTokensData(otpVerifyRequestDto.acntNo.toUpperCase(), 'auth.expires');
-        verifiedUsers.sid = token;
-        resp.data_list = verifiedUsers as VerifiedOtp[];
+        verifiedUsers[0].sid = token;
+        resp.data_list = verifiedUsers;
         this.redis.hset(`user:${otpVerifyRequestDto.acntNo.toLowerCase()}`, {
           otp_event: '',
           otp_index: '',
