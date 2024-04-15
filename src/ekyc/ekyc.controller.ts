@@ -1,8 +1,9 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { EkycService } from './ekyc.service';
-import { EKYCOpenAccountResponseDto } from './domain/account-response.dto';
+import { EKYCCheckAccountExistResponseDto, EKYCOpenAccountResponseDto } from './domain/account-response.dto';
 import { ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OpenAccountDto } from './dto/open-account.dto';
+import { CheckAccountExistDto } from './dto/check-account-exist.dto';
 
 @ApiTags('EKYC Open Account')
 @ApiResponse({
@@ -19,11 +20,11 @@ export class EkycController {
     return this.ekycService.openAccount(openAccountDto);
   }
 
-  // @Get('account/status')
-  // @ApiOkResponse({ type: EKYCCheckAccountExistResponseDto })
-  // public checkAccountExist(@Body() checkAccountExistPayload: EKYCCheckAccountExistPayloadDto): Promise<EKYCCheckAccountExistResponseDto> {
-  //   return this.ekycService.checkAccountExist(checkAccountExistPayload);
-  // }
+  @Get('account/status')
+  @ApiOkResponse({ type: EKYCCheckAccountExistResponseDto })
+  public checkAccountExist(@Body() checkAccountExistDto: CheckAccountExistDto): Promise<EKYCCheckAccountExistResponseDto> {
+    return this.ekycService.checkAccountExist(checkAccountExistDto);
+  }
 
   // @Get('account/vsd-status')
   // @ApiOkResponse({ type: EKYCCheckAccountExistResponseDto })

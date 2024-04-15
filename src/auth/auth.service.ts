@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -13,7 +13,8 @@ import { InjectRedis } from '@nestjs-modules/ioredis';
 import { Redis } from 'ioredis';
 import { VerifiedOtp } from './domain/verify-otp/verified-otp';
 import { VerifiedOtpResponse } from './domain/verify-otp/verified-otp-response';
-import { callLotteService } from 'src/utils/axios-utils';
+import { AxiosError } from 'axios';
+import { firstValueFrom, timeout, throwError, catchError } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +26,7 @@ export class AuthService {
   ) {}
 
   async loginViaLotte(authLoginDto: LoginDto): Promise<AuthResponse> {
-    const data = await callLotteService(
+    const data = await this.callLotteService(
       'post',
       '/tsol/apikey/tuxsvc/account/user/verify',
       new URLSearchParams({
@@ -57,7 +58,7 @@ export class AuthService {
 
   async sendOTP() {}
   async verifyOTP(otpVerifyRequestDto: VerifyOTPDto): Promise<VerifiedOtpResponse> {
-    const data = await callLotteService('post', '/tsol/apikey/tuxsvc/account/user/urs-otp-verify', {
+    const data = await this.callLotteService('post', '/tsol/apikey/tuxsvc/account/user/urs-otp-verify', {
       acnt_no: otpVerifyRequestDto.acntNo.toUpperCase(),
       otp_val: otpVerifyRequestDto.otpVal,
       otp_enc: otpVerifyRequestDto.otpEnc,
@@ -101,5 +102,27 @@ export class AuthService {
       token,
       tokenExpires,
     };
+  }
+
+  private async callLotteService(method: string, url: string, payload: any) {
+    const { data }: any = await firstValueFrom(
+      this.httpService
+        .request({
+          method: method,
+          url: url,
+          data: payload,
+        })
+        .pipe(
+          timeout({
+            each: 5000,
+            with: () => throwError(() => new Error('Login timeout')),
+          }),
+          catchError((error: AxiosError) => {
+            console.log(error);
+            throw new HttpException(error.response?.data ? error.response.data['error_desc'] : error.response?.statusText, error.response?.status as number);
+          }),
+        ),
+    );
+    return data;
   }
 }
