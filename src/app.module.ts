@@ -12,6 +12,7 @@ import { DataSourceOptions, DataSource } from 'typeorm';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { AllConfigType } from './config/config.type';
 import { HttpModule } from '@nestjs/axios';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { HttpModule } from '@nestjs/axios';
         imports: [ConfigModule],
         inject: [ConfigService],
         useFactory: async (configService: ConfigService<AllConfigType>) => ({
+          timeout: 60000,
           baseURL: configService.get('auth.lotteBaseUrl', { infer: true }),
           headers: {
             apiKey: configService.get('auth.lotteApiKey', { infer: true }),
@@ -51,6 +53,7 @@ import { HttpModule } from '@nestjs/axios';
     AuthModule,
     HomeModule,
     EkycModule,
+    SharedModule,
   ],
 })
 export class AppModule {}

@@ -99,7 +99,7 @@ export class EkycService {
   }
 
   async updateAccount(updateAccountPayload: UpdateAccountDto): Promise<EKYCUpdateAccountResponseDto> {
-    const data = await this.callLotteService('post', '/tsol/apikey/tuxsvc/ekyc/create-account', updateAccountPayload);
+    const data = await this.callLotteService('post', LotteUrlConst.ekyc.updateAccount, updateAccountPayload);
     const updatedAcc = plainToClass(UpdateAccount, data.data_list) as UpdateAccount[];
 
     const resp = new EKYCUpdateAccountResponseDto();
@@ -114,7 +114,7 @@ export class EkycService {
   }
 
   async getAccountInfo(getAccountInfoPayload: GetAccountInfoDto): Promise<EKYCGetAccountInfoResponseDto> {
-    const data = await this.callLotteService('post', '/tsol/apikey/tuxsvc/ekyc/create-account', getAccountInfoPayload);
+    const data = await this.callLotteService('post', LotteUrlConst.ekyc.getAccountInfo, getAccountInfoPayload);
     const updatedAcc = plainToClass(GetAccountInfo, data.data_list) as GetAccountInfo[];
 
     const resp = new EKYCGetAccountInfoResponseDto();
@@ -129,7 +129,7 @@ export class EkycService {
   }
 
   async getBrokerInfo(getBrokerInfoPayload: GetBrokerInfo): Promise<EKYCGetBrokerInfoResponseDto> {
-    const data = await this.callLotteService('post', '/tsol/apikey/tuxsvc/ekyc/create-account', getBrokerInfoPayload);
+    const data = await this.callLotteService('post', LotteUrlConst.ekyc.getBrokerInfo, getBrokerInfoPayload);
     const updatedAcc = plainToClass(GetBrokerInfo, data.data_list) as GetBrokerInfo[];
 
     const resp = new EKYCGetBrokerInfoResponseDto();

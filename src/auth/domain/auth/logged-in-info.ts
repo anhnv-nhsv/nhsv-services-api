@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { UserAccountDto } from './user-account';
+import { Expose } from 'class-transformer';
 
 export class LoggedInInfo {
   @ApiProperty({ example: '039c110015', description: 'Login ID' })
@@ -20,23 +21,23 @@ export class LoggedInInfo {
   @ApiProperty({ example: '0A', description: 'Phân loại tài khoản' })
   hts_level?: string;
 
-  @ApiProperty({ example: '100', description: 'Chi nhánh quản lí tài khoản' })
-  dept_code0?: string;
-
-  @ApiProperty({ example: '100', description: 'Chi nhánh quản lí tài khoản' })
-  dept_code1?: string;
-
-  @ApiProperty({ example: '00', description: 'Mã Chi nhánh uỷ quyền' })
-  dept_code2?: string;
-
-  @ApiProperty({ example: '000', description: 'Mã chi nhánh uỷ quyền' })
-  agc_no?: string;
-
-  @ApiProperty({ example: '0', description: 'Số lần nhập sai OTP' })
-  err_cnt?: string;
-
-  @ApiProperty({ example: 'Y', description: 'Trạng thái OTP' })
-  otp_stat?: string;
+  // @ApiProperty({ example: '100', description: 'Chi nhánh quản lí tài khoản' })
+  // dept_code0?: string;
+  //
+  // @ApiProperty({ example: '100', description: 'Chi nhánh quản lí tài khoản' })
+  // dept_code1?: string;
+  //
+  // @ApiProperty({ example: '00', description: 'Mã Chi nhánh uỷ quyền' })
+  // dept_code2?: string;
+  //
+  // @ApiProperty({ example: '000', description: 'Mã chi nhánh uỷ quyền' })
+  // agc_no?: string;
+  //
+  // @ApiProperty({ example: '0', description: 'Số lần nhập sai OTP' })
+  // err_cnt?: string;
+  //
+  // @ApiProperty({ example: 'Y', description: 'Trạng thái OTP' })
+  // otp_stat?: string;
 
   @ApiProperty({
     example: '19',
